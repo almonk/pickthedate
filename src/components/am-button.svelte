@@ -1,7 +1,7 @@
 <script>
 	// An enum for primary, secondary and tertiary buttons
 	export let variant = 'secondary';
-  export let size = 'md';
+	export let size = 'md';
 
 	/**
 	 * @type {any}
@@ -12,7 +12,7 @@
 	 */
 	export let disabled = false;
 
-  export let className = '';
+	export let className = '';
 
 	const secondaryClasses =
 		'bg-white border border-black border-opacity-10 shadow-sm text-neutral-700';
@@ -24,10 +24,10 @@
 	 * @type {string}
 	 */
 	let buttonClasses;
-  /**
+	/**
 	 * @type {string}
 	 */
-  let sizeClasses;
+	let sizeClasses;
 
 	$: {
 		switch (variant) {
@@ -46,16 +46,16 @@
 		}
 	}
 
-  $: {
-    switch (size) {
-      case 'sm':
-        sizeClasses = 'px-3 py-[5px]';
-        break;
-      default:
-        sizeClasses = 'px-4 py-2';
-        break;
-    }
-  }
+	$: {
+		switch (size) {
+			case 'sm':
+				sizeClasses = 'px-3 py-[5px]';
+				break;
+			default:
+				sizeClasses = 'px-4 py-2';
+				break;
+		}
+	}
 </script>
 
 <button

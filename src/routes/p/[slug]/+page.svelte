@@ -5,6 +5,7 @@
 	import { fade } from 'svelte/transition';
 	import { CheckCircle2 } from 'lucide-svelte';
 	import AmButton from '../../../components/am-button.svelte';
+	import AmPopover from '../../../components/am-popover.svelte';
 
 	// Data loaded from server
 	export let data;
@@ -296,17 +297,6 @@
 	</div>
 </div>
 
-<!-- Modal bg -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<div
-	class="z-10 fixed left-0 right-0 top-0 bottom-0 bg-white bg-opacity-0"
-	class:pointer-events-none={!showShareSheet}
-	class:pointer-events-auto={showShareSheet}
-	on:click={() => {
-		showShareSheet = false;
-	}}
-/>
-
 <div
 	class="max-w-lg mx-auto mt-4 z-0 transition-opacity"
 	class:opacity-20={showHelpBanner}
@@ -330,14 +320,7 @@
 				Share</AmButton
 			>
 			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-			<div
-				class="absolute text-sm translate-y-2 bg-white text-neutral-600 shadow-xl p-4 -left-[200px] rounded-xl border border-black border-opacity-5 transition-all transform-gpu origin-top-right z-50"
-				class:opacity-0={!showShareSheet}
-				class:scale-50={!showShareSheet}
-				class:opacity-100={showShareSheet}
-				class:scale-100={showShareSheet}
-				tabindex="-1"
-			>
+			<AmPopover bind:show={showShareSheet}>
 				Share this URL to find a time that works for everyone&hellip;
 				<div class="flex items-center gap-x-2 mt-2">
 					<input
@@ -353,7 +336,7 @@
 						readonly
 					/>
 				</div>
-			</div>
+			</AmPopover>
 		</div>
 	</div>
 </div>

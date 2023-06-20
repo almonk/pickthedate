@@ -19,7 +19,7 @@
 	let checkboxValues = {};
 
 	// UI state
-	let showHelpBanner = false;
+	let showHelpBanner = true;
 	let showShareSheet = false;
 	let shareUrl = '';
 

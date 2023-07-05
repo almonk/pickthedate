@@ -1,11 +1,19 @@
 <script>
 	import Title from '../../../components/title.svelte';
 	import { v4 } from 'uuid';
-	import { UserPlusIcon, Share2Icon, CheckCircleIcon, MinusIcon } from 'svelte-feather-icons';
-	import { fade } from 'svelte/transition';
-	import { CheckCircle2 } from 'lucide-svelte';
+	import {
+		UserPlusIcon,
+		Share2Icon,
+		CheckCircleIcon,
+		MinusIcon,
+		PlusCircleIcon,
+		MinusCircleIcon
+	} from 'svelte-feather-icons';
+	import { fade, slide } from 'svelte/transition';
+	import { CheckCircle2, PencilIcon } from 'lucide-svelte';
 	import AmButton from '../../../components/am-button.svelte';
 	import AmPopover from '../../../components/am-popover.svelte';
+	import AmModal from '../../../components/am-modal.svelte';
 
 	// Data loaded from server
 	export let data;
@@ -23,9 +31,15 @@
 	let showHelpBanner = true;
 	let showShareSheet = false;
 	let shareUrl = '';
+	let showEditModal = false;
 
 	/** @type {HTMLInputElement} */
 	let shareUrlInput;
+
+	/** @type {HTMLInputElement} */
+	let editTitleInput;
+
+	let latestOption = '';
 
 	/**
 	 * Add or remove participant from poll option
@@ -130,6 +144,32 @@
 	}
 
 	/**
+	 * Add a new option
+	 * @param {Event} e
+	 */
+	function addOption(e) {
+		e.preventDefault();
+		data.event.options = [
+			...data.event.options,
+			{
+				id: v4(),
+				name: latestOption
+			}
+		];
+		latestOption = '';
+	}
+
+	/**
+	 * Delete option from options array
+	 * @param {number} index
+	 * @param {Event} e
+	 */
+	function deleteOption(index, e) {
+		e.preventDefault();
+		data.event.options = data.event.options.filter((_, i) => i !== index);
+	}
+
+	/**
 	 * Initialize reactive checkboxValues
 	 */
 	$: {
@@ -158,9 +198,13 @@
 
 <Title>{data.event.title}</Title>
 
-<div class="mx-auto max-w-lg mt-10">
+<div class="mx-auto max-w-lg mt-10 flex gap-x-2 items-center">
 	<h1 class="text-[22px] font-medium text-neutral-700">When's good to&hellip;{data.event.title}</h1>
+	<AmButton size="sm" variant="ghost" on:click={() => {showEditModal = !showEditModal; editTitleInput.focus(); editTitleInput.select()}}>
+		<PencilIcon class="w-4 h-4" />
+	</AmButton>
 </div>
+
 <div>
 	<div
 		class="mt-4 flex flex-col gap-y-4 items-start mx-auto max-w-2xl p-2 rounded-2xl bg-neutral-50 relative z-10"
@@ -348,3 +392,61 @@
 >
 	<a class="text-sm font-medium text-indigo-500 px-2" href="/"> Make your own poll like this </a>
 </div>
+
+<AmModal show={showEditModal}>
+	<div class="w-[320px] flex flex-col gap-y-4">
+		<label class="flex flex-col gap-y-2 px-4 pt-4">
+			<div>Edit event name</div>
+			<input
+				type="text"
+				class="text-sm px-2 py-1.5 border bg-white flex-auto rounded-lg outline-[3px] focus:outline-indigo-400 outline-none -outline-offset-1"
+				bind:value={data.event.title}
+				bind:this={editTitleInput}
+			/>
+		</label>
+		<div class="border-t border-neutral-100">
+			<div class="px-4 mt-4 pb-2">Edit options</div>
+			{#each data.event.options as option, index (option.id)}
+				<!-- Inputs -->
+				<div transition:slide={{ duration: 120 }} class="py-1">
+					<li class="flex gap-x-2 px-4">
+						<input
+							autofocus
+							name="option"
+							type="text"
+							on:keydown={(e) => {
+								if (e.key === 'Enter') {
+									e.preventDefault();
+								}
+							}}
+							placeholder={`Option ${index + 1}`}
+							bind:value={option.name}
+							class="text-sm px-2 py-1.5 border flex-auto rounded-lg outline-[3px] focus:outline-indigo-400 outline-none -outline-offset-1"
+						/>
+						{#if data.event.options.length > 2}
+							<AmButton size="small" variant="tertiary" on:click={(e) => deleteOption(index, e)}>
+								<MinusCircleIcon class="w-[16px] h-[16px] text-current" />
+							</AmButton>
+						{/if}
+					</li>
+				</div>
+			{/each}
+			<div
+				class="flex items-center justify-between border-t border-neutral-100 pt-4 mt-4 pb-4 px-4"
+			>
+				<AmButton on:click={(e) => addOption(e)} size="sm">
+					<PlusCircleIcon class="w-[16px] h-[16px] text-current" />
+					Add option</AmButton
+				>
+				<AmButton
+					on:click={(e) => {
+						updatePoll();
+						showEditModal = false;
+					}}
+					size="sm"
+					variant="primary">Done</AmButton
+				>
+			</div>
+		</div>
+	</div>
+</AmModal>

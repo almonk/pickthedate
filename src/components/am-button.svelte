@@ -40,6 +40,9 @@
 			case 'tertiary':
 				buttonClasses = 'bg-neutral-50 rounded-lg border border-neutral-100 text-neutral-600';
 				break;
+			case 'ghost':
+				buttonClasses = 'text-indigo-500 bg-white rounded-lg';
+				break;
 			default:
 				buttonClasses = secondaryClasses;
 				break;

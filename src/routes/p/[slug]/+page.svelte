@@ -200,7 +200,7 @@
 
 <div class="mx-auto max-w-lg mt-10 flex gap-x-2 items-center">
 	<h1 class="text-[22px] font-medium text-neutral-700">When's good to&hellip;{data.event.title}</h1>
-	<AmButton size="sm" variant="ghost" on:click={() => {showEditModal = !showEditModal; editTitleInput.focus(); editTitleInput.select()}}>
+	<AmButton size="sm" variant="ghost" on:click={() => {showEditModal = true; editTitleInput.focus(); editTitleInput.select()}}>
 		<PencilIcon class="w-4 h-4" />
 	</AmButton>
 </div>
@@ -393,7 +393,7 @@
 	<a class="text-sm font-medium text-indigo-500 px-2" href="/"> Make your own poll like this </a>
 </div>
 
-<AmModal show={showEditModal}>
+<AmModal bind:show={showEditModal}>
 	<div class="w-[320px] flex flex-col gap-y-4">
 		<label class="flex flex-col gap-y-2 px-4 pt-4">
 			<div>Edit event name</div>
@@ -424,7 +424,17 @@
 							class="text-sm px-2 py-1.5 border flex-auto rounded-lg outline-[3px] focus:outline-indigo-400 outline-none -outline-offset-1"
 						/>
 						{#if data.event.options.length > 2}
-							<AmButton size="small" variant="tertiary" on:click={(e) => deleteOption(index, e)}>
+							<AmButton size="small" variant="tertiary" on:click={
+							(e) => {
+								// Alert the user if they're deleting an option that has votes
+								if (option.participantIds && option.participantIds.length > 0) {
+									if (!confirm('This option has votes. Are you sure you want to delete it?')) {
+										return;
+									}
+								}
+								deleteOption(index, e)
+							}
+							}>
 								<MinusCircleIcon class="w-[16px] h-[16px] text-current" />
 							</AmButton>
 						{/if}
